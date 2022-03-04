@@ -20,6 +20,7 @@ import sessionReducer from '../features/session/slice';
 import queryReducer from '../features/query/slice';
 import tagReducer from '../features/tag/slice';
 import userReducer from '../features/user/slice';
+import meetingReducer from '../features/meeting/slice';
 
 const persistConfig = {
   key: 'root',
@@ -33,6 +34,7 @@ const persistedReducer = persistReducer(
     query: queryReducer,
     tag: tagReducer,
     user: userReducer,
+    meeting: meetingReducer,
   })
 );
 

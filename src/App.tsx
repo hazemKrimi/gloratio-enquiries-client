@@ -12,6 +12,7 @@ import Queries from './pages/Queries';
 import Tags from './pages/Tags';
 import Users from './pages/Users';
 import Settings from './pages/Settings';
+import Meetings from './pages/Meetings';
 
 import './App.css';
 
@@ -63,6 +64,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Users />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/meetings'
+        element={
+          <ProtectedRoute>
+            <Meetings />
           </ProtectedRoute>
         }
       />

@@ -43,6 +43,11 @@ const Navbar = () => {
                 Tags
               </Button>
             )}
+            {user?.role !== 'customer' && (
+              <Button color='inherit' onClick={() => navigate('/meetings')}>
+                Meetings
+              </Button>
+            )}
             {user?.role === 'admin' && (
               <Button color='inherit' onClick={() => navigate('/users')}>
                 Users
