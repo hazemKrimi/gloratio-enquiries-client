@@ -17,7 +17,7 @@ export const addRequest = async (values: UserAddInput, token: string) => {
   try {
     return (
       await axios.post(
-        `${process.env.REACT_APP_SERVER}/tags`,
+        `${process.env.REACT_APP_SERVER}/users`,
         {
           ...values,
         },

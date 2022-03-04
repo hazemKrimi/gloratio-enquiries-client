@@ -83,12 +83,17 @@ function Users() {
                 { title: 'First Name', field: 'firstName' },
                 { title: 'Last Name', field: 'lastName' },
                 { title: 'Email', field: 'email' },
-                { title: 'Password', field: 'password', hidden: true },
+                {
+                  title: 'Password',
+                  field: 'password',
+                  editable: 'onAdd',
+                  hidden: true,
+                },
                 { title: 'Phone', field: 'phone' },
                 { title: 'Address', field: 'address' },
                 { title: 'City', field: 'city' },
                 { title: 'Country', field: 'country' },
-                { title: 'Zip', field: 'zip' },
+                { title: 'Zip', field: 'zip', type: 'numeric' },
                 {
                   title: 'Role',
                   field: 'role',
@@ -111,7 +116,7 @@ function Users() {
               }))}
               editable={{
                 onRowAdd: async ({ id, ...values }) => {
-                  dispatch(add(values));
+                  dispatch(add({ ...values, password: '123456' }));
                 },
                 onRowUpdate: async (values) => {
                   dispatch(edit(values));
