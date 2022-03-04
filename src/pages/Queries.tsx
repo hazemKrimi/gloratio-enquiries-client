@@ -232,7 +232,7 @@ function Queries() {
                   : {},
               ]}
               tableRef={tableRef}
-              data={queries.map((query) => ({
+              data={queries?.map((query) => ({
                 id: query._id,
                 title: query.title,
                 subject: query.subject,
@@ -318,6 +318,7 @@ function Queries() {
               ]}
               options={{
                 grouping: user?.role !== 'customer',
+                search: true,
               }}
             />
           ) : (

@@ -19,6 +19,7 @@ import logger from 'redux-logger';
 import sessionReducer from '../features/session/slice';
 import queryReducer from '../features/query/slice';
 import tagReducer from '../features/tag/slice';
+import userReducer from '../features/user/slice';
 
 const persistConfig = {
   key: 'root',
@@ -31,6 +32,7 @@ const persistedReducer = persistReducer(
     session: sessionReducer,
     query: queryReducer,
     tag: tagReducer,
+    user: userReducer,
   })
 );
 

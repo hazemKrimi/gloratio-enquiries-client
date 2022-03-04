@@ -103,7 +103,6 @@ export default function Login() {
         <form className={classes.form} onSubmit={form.handleSubmit}>
           <TextField
             margin='normal'
-            required
             fullWidth
             id='email'
             label='Email Address'
@@ -117,7 +116,6 @@ export default function Login() {
           />
           <TextField
             margin='normal'
-            required
             fullWidth
             name='password'
             label='Password'

@@ -12,6 +12,8 @@ import {
   signup,
 } from '../features/session/slice';
 
+import { UserSignupInput } from '../features/session/types';
+
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -68,7 +70,7 @@ export default function SignUp() {
     showSignupErrors();
   }, [showSignupErrors]);
 
-  const form = useFormik({
+  const form = useFormik<UserSignupInput>({
     initialValues: {
       firstName: '',
       lastName: '',
@@ -78,7 +80,7 @@ export default function SignUp() {
       address: '',
       city: '',
       country: '',
-      zip: undefined,
+      zip: 0,
       role: 'customer',
     },
     validationSchema: Yup.object().shape({
@@ -96,7 +98,7 @@ export default function SignUp() {
       country: Yup.string().required('Country is required'),
       zip: Yup.number().required('Zip is required'),
     }),
-    onSubmit: ({ ...values }, { resetForm }) => {
+    onSubmit: (values, { resetForm }) => {
       try {
         dispatch(signup({ ...values }));
       } finally {
@@ -121,7 +123,6 @@ export default function SignUp() {
               <TextField
                 autoComplete='given-name'
                 name='firstName'
-                required
                 fullWidth
                 id='firstName'
                 label='First Name'
@@ -134,7 +135,6 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                required
                 fullWidth
                 id='lastName'
                 label='Last Name'
@@ -148,7 +148,6 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
                 id='email'
                 label='Email Address'
@@ -163,7 +162,6 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
                 name='password'
                 label='Password'
@@ -179,7 +177,6 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
                 id='phone'
                 label='Phone'
@@ -194,7 +191,6 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
                 id='address'
                 label='Address'
@@ -209,7 +205,6 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
                 id='city'
                 label='City'
@@ -224,7 +219,6 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
                 id='country'
                 label='Country'
@@ -239,7 +233,6 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
                 type='number'
                 id='zip'

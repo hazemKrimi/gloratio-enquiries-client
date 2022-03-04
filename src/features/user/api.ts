@@ -1,16 +1,11 @@
 import axios, { AxiosError } from 'axios';
-import { UserEditInput } from '../user/types';
 
-import { UserError, UserSignupInput } from './types';
+import { UserError } from '../session/types';
+import { UserAddInput, UserEditInput } from './types';
 
-export const loginRequest = async (email: string, password: string) => {
+export const getAllUsersRequest = async () => {
   try {
-    return (
-      await axios.post(`${process.env.REACT_APP_SERVER}/users/login`, {
-        email,
-        password,
-      })
-    ).data;
+    return (await axios.get(`${process.env.REACT_APP_SERVER}/users`)).data;
   } catch (err) {
     let error: AxiosError<UserError> = err as AxiosError;
 
@@ -18,12 +13,20 @@ export const loginRequest = async (email: string, password: string) => {
   }
 };
 
-export const signupRequest = async (values: UserSignupInput) => {
+export const addRequest = async (values: UserAddInput, token: string) => {
   try {
     return (
-      await axios.post(`${process.env.REACT_APP_SERVER}/users/signup`, {
-        ...values,
-      })
+      await axios.post(
+        `${process.env.REACT_APP_SERVER}/tags`,
+        {
+          ...values,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      )
     ).data;
   } catch (err) {
     let error: AxiosError<UserError> = err as AxiosError;

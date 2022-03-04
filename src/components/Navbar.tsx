@@ -38,16 +38,19 @@ const Navbar = () => {
             <Button color='inherit' onClick={() => navigate('/queries')}>
               Queries
             </Button>
-            {user?.role === 'admin' && (
-              <Button color='inherit' onClick={() => navigate('/users')}>
-                Users
-              </Button>
-            )}
             {user?.role !== 'customer' && (
               <Button color='inherit' onClick={() => navigate('/tags')}>
                 Tags
               </Button>
             )}
+            {user?.role === 'admin' && (
+              <Button color='inherit' onClick={() => navigate('/users')}>
+                Users
+              </Button>
+            )}
+            <Button color='inherit' onClick={() => navigate('/settings')}>
+              Settings
+            </Button>
             <Button
               color='inherit'
               onClick={() => {

@@ -1,47 +1,48 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../redux/store';
-import { UserEditInput } from '../user/types';
-import { editRequest, loginRequest, removeRequest, signupRequest } from './api';
-import {
-  User,
-  UserLoginInput,
-  UserLoginResponse,
-  UserSignupInput,
-  UserSignupResponse,
-} from './types';
 
-export interface SessionState {
-  user: User | undefined;
-  token: string | undefined;
+import {
+  addRequest,
+  editRequest,
+  getAllUsersRequest,
+  removeRequest,
+} from './api';
+
+import { User } from '../session/types';
+import { UserAddInput, UserAddResponse, UserEditInput } from './types';
+
+export interface UserState {
+  users: Array<User>;
   loading: boolean;
   error: string | undefined;
 }
 
-const initialState: SessionState = {
-  user: undefined,
-  token: undefined,
+const initialState: UserState = {
+  users: [],
   loading: false,
   error: undefined,
 };
 
-export const login = createAsyncThunk(
-  'session/login',
-  async ({ email, password }: UserLoginInput, { rejectWithValue }) => {
+export const getAllUsers = createAsyncThunk(
+  'users/getAllUsers',
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const response = await loginRequest(email, password);
-      return response as UserLoginResponse;
+      const currentUser = (getState() as RootState).session.user as User;
+      const response = await getAllUsersRequest();
+      return (response as Array<User>).filter((u) => u._id !== currentUser._id);
     } catch (err) {
       return rejectWithValue(err);
     }
   }
 );
 
-export const signup = createAsyncThunk(
-  'session/signup',
-  async (values: UserSignupInput, { rejectWithValue }) => {
+export const add = createAsyncThunk(
+  'users/add',
+  async (values: UserAddInput, { rejectWithValue, getState }) => {
     try {
-      const response = await signupRequest({ ...values });
-      return response as UserSignupResponse;
+      const token = (getState() as RootState).session.token as string;
+      const response = await addRequest({ ...values }, token);
+      return response as UserAddResponse;
     } catch (err) {
       return rejectWithValue(err);
     }
@@ -49,7 +50,7 @@ export const signup = createAsyncThunk(
 );
 
 export const edit = createAsyncThunk(
-  'session/edit',
+  'users/edit',
   async (values: UserEditInput, { rejectWithValue, getState }) => {
     try {
       const token = (getState() as RootState).session.token as string;
@@ -62,7 +63,7 @@ export const edit = createAsyncThunk(
 );
 
 export const remove = createAsyncThunk(
-  'session/remove',
+  'users/remove',
   async (id: string, { rejectWithValue, getState }) => {
     try {
       const token = (getState() as RootState).session.token as string;
@@ -74,13 +75,12 @@ export const remove = createAsyncThunk(
   }
 );
 
-export const sessionSlice = createSlice({
-  name: 'session',
+export const userSlice = createSlice({
+  name: 'user',
   initialState,
   reducers: {
-    resetUser: (state) => {
-      state.user = undefined;
-      state.token = undefined;
+    resetUsers: (state) => {
+      state.users = [];
     },
     resetError: (state) => {
       state.error = undefined;
@@ -88,31 +88,29 @@ export const sessionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(login.pending, (state) => {
+      .addCase(getAllUsers.pending, (state) => {
         state.loading = true;
         state.error = undefined;
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(getAllUsers.fulfilled, (state, action) => {
         state.loading = false;
         state.error = undefined;
-        state.user = action.payload.user as User;
-        state.token = action.payload.token as string;
+        state.users = action.payload;
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(getAllUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
-      .addCase(signup.pending, (state) => {
+      .addCase(add.pending, (state) => {
         state.loading = true;
         state.error = undefined;
       })
-      .addCase(signup.fulfilled, (state, action) => {
+      .addCase(add.fulfilled, (state, action) => {
         state.loading = false;
         state.error = undefined;
-        state.user = action.payload.user as User;
-        state.token = action.payload.token as string;
+        state.users = [...state.users, action.payload.user];
       })
-      .addCase(signup.rejected, (state, action) => {
+      .addCase(add.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
@@ -123,7 +121,10 @@ export const sessionSlice = createSlice({
       .addCase(edit.fulfilled, (state, action) => {
         state.loading = false;
         state.error = undefined;
-        state.user = action.payload;
+        state.users = [
+          ...state.users.filter((u) => u._id !== action.payload._id),
+          action.payload,
+        ];
       })
       .addCase(edit.rejected, (state, action) => {
         state.loading = false;
@@ -133,11 +134,12 @@ export const sessionSlice = createSlice({
         state.loading = true;
         state.error = undefined;
       })
-      .addCase(remove.fulfilled, (state) => {
+      .addCase(remove.fulfilled, (state, action) => {
         state.loading = false;
         state.error = undefined;
-        state.user = undefined;
-        state.token = undefined;
+        state.users = [
+          ...state.users.filter((u) => u._id !== action.payload._id),
+        ];
       })
       .addCase(remove.rejected, (state, action) => {
         state.loading = false;
@@ -146,11 +148,10 @@ export const sessionSlice = createSlice({
   },
 });
 
-export const { resetUser, resetError } = sessionSlice.actions;
+export const { resetUsers, resetError } = userSlice.actions;
 
-export const selectUser = (state: RootState) => state.session.user;
-export const selectToken = (state: RootState) => state.session.token;
-export const selectLoading = (state: RootState) => state.session.loading;
-export const selectError = (state: RootState) => state.session.error;
+export const selectUsers = (state: RootState) => state.user.users;
+export const selectLoading = (state: RootState) => state.user.loading;
+export const selectError = (state: RootState) => state.user.error;
 
-export default sessionSlice.reducer;
+export default userSlice.reducer;

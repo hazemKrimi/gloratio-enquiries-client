@@ -5,14 +5,15 @@ import { useLocation, Navigate } from 'react-router-dom';
 
 import { selectUser } from '../features/session/slice';
 import {
-  add,
-  getAllTags,
-  remove,
-  resetError,
-  selectError,
+  getAllUsers,
+  selectUsers,
   selectLoading,
-  selectTags,
-} from '../features/tag/slice';
+  selectError,
+  resetError,
+  add,
+  remove,
+  edit,
+} from '../features/user/slice';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -26,19 +27,19 @@ const useStyles = makeStyles({
   },
 });
 
-function Tags() {
+function Users() {
   const classes = useStyles();
   const tableRef = useRef();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const location = useLocation();
-  const tags = useSelector(selectTags);
+  const users = useSelector(selectUsers);
   const loading = useSelector(selectLoading);
   const error = useSelector(selectError);
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const showTagErrors = useCallback(() => {
+  const showUsersErrors = useCallback(() => {
     if (error) {
       enqueueSnackbar(error, {
         variant: 'error',
@@ -54,16 +55,16 @@ function Tags() {
   }, [enqueueSnackbar, dispatch, error]);
 
   useEffect(() => {
-    showTagErrors();
-  }, [showTagErrors]);
+    showUsersErrors();
+  }, [showUsersErrors]);
 
-  const getTags = useCallback(() => {
-    dispatch(getAllTags());
+  const getUsers = useCallback(() => {
+    dispatch(getAllUsers());
   }, [dispatch]);
 
   useEffect(() => {
-    getTags();
-  }, [getTags]);
+    getUsers();
+  }, [getUsers]);
 
   if (user?.role === 'customer') {
     return <Navigate to='/queries' state={{ from: location }} replace />;
@@ -76,19 +77,44 @@ function Tags() {
         <div className={classes.table}>
           {!loading ? (
             <MaterialTable
-              title='Tags'
+              title='Users'
               columns={[
                 { title: 'Id', field: 'id', editable: 'never' },
-                { title: 'Name', field: 'name' },
+                { title: 'First Name', field: 'firstName' },
+                { title: 'Last Name', field: 'lastName' },
+                { title: 'Email', field: 'email' },
+                { title: 'Password', field: 'password', hidden: true },
+                { title: 'Phone', field: 'phone' },
+                { title: 'Address', field: 'address' },
+                { title: 'City', field: 'city' },
+                { title: 'Country', field: 'country' },
+                { title: 'Zip', field: 'zip' },
+                {
+                  title: 'Role',
+                  field: 'role',
+                  lookup: { customer: 'Customer', user: 'User' },
+                },
               ]}
               tableRef={tableRef}
-              data={tags?.map((tag) => ({
-                id: tag._id,
-                name: tag.name,
+              data={users?.map((user) => ({
+                id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                password: user.password,
+                phone: user.phone,
+                address: user.address,
+                city: user.city,
+                country: user.country,
+                zip: user.zip,
+                role: user.role,
               }))}
               editable={{
-                onRowAdd: async ({ name }) => {
-                  dispatch(add(name));
+                onRowAdd: async ({ id, ...values }) => {
+                  dispatch(add(values));
+                },
+                onRowUpdate: async (values) => {
+                  dispatch(edit(values));
                 },
                 onRowDelete: async ({ id }) => {
                   dispatch(remove(id));
@@ -113,4 +139,4 @@ function Tags() {
   );
 }
 
-export default Tags;
+export default Users;

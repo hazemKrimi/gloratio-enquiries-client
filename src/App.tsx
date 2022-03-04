@@ -10,6 +10,8 @@ import SignUp from './pages/Signup';
 import Login from './pages/Login';
 import Queries from './pages/Queries';
 import Tags from './pages/Tags';
+import Users from './pages/Users';
+import Settings from './pages/Settings';
 
 import './App.css';
 
@@ -53,6 +55,22 @@ function App() {
         element={
           <ProtectedRoute>
             <Tags />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/users'
+        element={
+          <ProtectedRoute>
+            <Users />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/settings'
+        element={
+          <ProtectedRoute>
+            <Settings />
           </ProtectedRoute>
         }
       />
